@@ -1,9 +1,17 @@
 package io.github.superfive666.duosdk.auth;
 
-import lombok.RequiredArgsConstructor;
+import io.github.superfive666.duosdk.error.DuoRejectedException;
+import io.github.superfive666.duosdk.error.DuoTimeoutException;
+import io.github.superfive666.duosdk.params.request.Auth;
+import io.github.superfive666.duosdk.params.response.AuthResponse;
+import io.github.superfive666.duosdk.params.response.DuoBaseResponse;
 import org.springframework.web.client.RestTemplate;
 
-@RequiredArgsConstructor
-class DuoAuthHandler {
-    private final RestTemplate duoRestTemplate;
+class DuoAuthHandler extends AbstractHandler {
+    DuoAuthHandler(RestTemplate duoRestTemplate) { super(duoRestTemplate); }
+
+    DuoBaseResponse<AuthResponse> auth(Auth auth) throws DuoTimeoutException, DuoRejectedException {
+
+        return null;
+    }
 }

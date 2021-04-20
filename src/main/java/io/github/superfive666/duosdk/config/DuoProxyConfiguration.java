@@ -1,9 +1,7 @@
 package io.github.superfive666.duosdk.config;
 
-import io.github.superfive666.duosdk.error.DuoIllegalConfigurationException;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -41,7 +39,6 @@ public class DuoProxyConfiguration {
     private String proxyPassword = StringUtils.EMPTY;
 
     @PostConstruct
-    @SneakyThrows(DuoIllegalConfigurationException.class)
     public void checkConfigurationValid() {
         log.debug("DUO Proxy Configuration Enabled: {}", proxyEnabled);
         if (proxyEnabled) {
