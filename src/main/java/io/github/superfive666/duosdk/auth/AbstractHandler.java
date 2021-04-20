@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,17 +30,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 abstract class AbstractHandler {
     protected static final String HTTPS_PROTOCOL = "https://";
-    private final RestTemplate duoRestTemplate;
+    protected final RestTemplate duoRestTemplate;
     protected final String host;
     private final String ikey;
     private final String skey;
 
     protected Pair<HttpHeaders, String> sign(Map<String, String> params, String method, String path) {
-        String now = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z").format(LocalDateTime.now());
+        String now = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z"));
         final String args = params.entrySet().stream()
                 .filter(e -> StringUtils.isNotEmpty(e.getValue()))
                 .sorted(Map.Entry.comparingByKey())
-                .map(e -> String.format("%s=%s", URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8), URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8)))
+                .map(e -> String.format("%s=%s",
+                        URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8).replace("+", "%20"),
+                        URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8).replace("+", "%20")))
                 .collect(Collectors.joining("&"));
         String canon = StringUtils.join(new String[]{now, method.toUpperCase(), host.toLowerCase(), path, args}, "\n");
         String signature = signature(canon);

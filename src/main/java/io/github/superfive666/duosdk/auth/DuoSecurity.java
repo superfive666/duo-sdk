@@ -2,6 +2,7 @@ package io.github.superfive666.duosdk.auth;
 
 import io.github.superfive666.duosdk.config.DuoSecretConfiguration;
 import io.github.superfive666.duosdk.error.DuoInvalidArgumentException;
+import io.github.superfive666.duosdk.error.DuoNetworkException;
 import io.github.superfive666.duosdk.error.DuoRejectedException;
 import io.github.superfive666.duosdk.error.DuoTimeoutException;
 import io.github.superfive666.duosdk.params.request.Auth;
@@ -61,8 +62,10 @@ public class DuoSecurity {
      * @throws DuoTimeoutException If the DUO authentication is not promptly attended to, it causes timeout on authentication API
      * @throws DuoRejectedException If the DUO authentication is "deny" (reason can be fraud or mistake)
      * @throws DuoInvalidArgumentException If the parameter passed in is not valid
+     * @throws DuoNetworkException If the remote failed to respond
      */
-    public AuthResponse auth(Auth auth) throws DuoTimeoutException, DuoRejectedException, DuoInvalidArgumentException {
+    public AuthResponse auth(Auth auth) throws DuoTimeoutException, DuoRejectedException,
+            DuoInvalidArgumentException, DuoNetworkException {
         return duoAuthHandler.auth(auth).getResponse();
     }
 }

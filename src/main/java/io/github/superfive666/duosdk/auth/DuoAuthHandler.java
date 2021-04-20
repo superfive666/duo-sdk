@@ -1,6 +1,7 @@
 package io.github.superfive666.duosdk.auth;
 
 import io.github.superfive666.duosdk.error.DuoInvalidArgumentException;
+import io.github.superfive666.duosdk.error.DuoNetworkException;
 import io.github.superfive666.duosdk.error.DuoRejectedException;
 import io.github.superfive666.duosdk.error.DuoTimeoutException;
 import io.github.superfive666.duosdk.params.DuoAuthenticationMode;
@@ -10,6 +11,8 @@ import io.github.superfive666.duosdk.params.response.DuoBaseResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
@@ -23,10 +26,16 @@ class DuoAuthHandler extends AbstractHandler {
         super(duoRestTemplate, host, ikey, skey);
     }
 
-    DuoBaseResponse<AuthResponse> auth(Auth auth) throws DuoTimeoutException, DuoRejectedException, DuoInvalidArgumentException {
+    DuoBaseResponse<AuthResponse> auth(Auth auth) throws DuoTimeoutException, DuoRejectedException,
+            DuoInvalidArgumentException, DuoNetworkException {
         final String path = "/auth/v2/auth";
         Pair<HttpHeaders, String> signature = sign(constructParam(auth), HttpMethod.POST.name(), path);
-        DuoBaseResponse<AuthResponse> response = post(HTTPS_PROTOCOL + host + path, signature.getLeft(), signature.getRight());
+        DuoBaseResponse<AuthResponse> response = duoRestTemplate.exchange(HTTPS_PROTOCOL + host + path,
+                HttpMethod.POST, new HttpEntity<>(signature.getRight(), signature.getLeft()),
+                new ParameterizedTypeReference<DuoBaseResponse<AuthResponse>>() {}).getBody();
+        if (response == null) {
+            throw new DuoNetworkException("Remote failed to respond");
+        }
         AuthResponse data = response.getResponse();
         if (DuoResult.DENY.name().toLowerCase().equals(data.getResult())) {
             if (DuoResult.TIMEOUT.name().toLowerCase().equals(data.getStatus())) {

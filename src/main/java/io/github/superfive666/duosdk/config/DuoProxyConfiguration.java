@@ -9,10 +9,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -81,8 +87,26 @@ public class DuoProxyConfiguration {
             // Response details log
             log.debug("Http response status: {}", clientHttpResponse.getRawStatusCode());
             log.debug("Http response headers: {}", clientHttpResponse.getHeaders().toString());
-            log.debug("Http response body: {}", new String(IOUtils.toByteArray(clientHttpResponse.getBody()), StandardCharsets.UTF_8));
-            return clientHttpResponse;
+            byte[] buffer;
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                IOUtils.copy(clientHttpResponse.getBody(), baos);
+                buffer = baos.toByteArray();
+            }
+            log.debug("Http response body: {}", new String(buffer, StandardCharsets.UTF_8));
+            return new ClientHttpResponse() {
+                @Override
+                public HttpStatus getStatusCode() throws IOException { return clientHttpResponse.getStatusCode(); }
+                @Override
+                public int getRawStatusCode() throws IOException { return clientHttpResponse.getRawStatusCode(); }
+                @Override
+                public String getStatusText() throws IOException { return clientHttpResponse.getStatusText(); }
+                @Override
+                public void close() { }
+                @Override
+                public InputStream getBody() throws IOException { return new ByteArrayInputStream(buffer); }
+                @Override
+                public HttpHeaders getHeaders() { return clientHttpResponse.getHeaders(); }
+            };
         });
         return duoRestTemplate;
     }
