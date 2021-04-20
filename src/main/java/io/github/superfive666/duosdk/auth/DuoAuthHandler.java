@@ -6,6 +6,7 @@ import io.github.superfive666.duosdk.error.DuoTimeoutException;
 import io.github.superfive666.duosdk.params.request.Auth;
 import io.github.superfive666.duosdk.params.response.AuthResponse;
 import io.github.superfive666.duosdk.params.response.DuoBaseResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -30,7 +31,10 @@ class DuoAuthHandler extends AbstractHandler {
 
     private Map<String, String> constructParam(Auth auth) throws DuoInvalidArgumentException {
         Map<String, String> params = new HashMap<>(10);
-
+        
+        if (StringUtils.isEmpty(auth.getUserId()) == StringUtils.isEmpty(auth.getUsername())) {
+            throw new DuoInvalidArgumentException("Exactly one user_id or username should be specified");
+        }
 
 
         return params;
