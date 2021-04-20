@@ -1,6 +1,7 @@
 package io.github.superfive666.duosdk.auth;
 
 import io.github.superfive666.duosdk.config.DuoSecretConfiguration;
+import io.github.superfive666.duosdk.error.DuoInvalidArgumentException;
 import io.github.superfive666.duosdk.error.DuoRejectedException;
 import io.github.superfive666.duosdk.error.DuoTimeoutException;
 import io.github.superfive666.duosdk.params.request.Auth;
@@ -42,6 +43,14 @@ public class DuoSecurity {
         Assert.notNull(duoMiscHandler, "Configuration error");
     }
 
+    /**
+     * Ping the liveliness of the DUO api
+     *
+     * @return The ping check time in milliseconds of epoch time
+     */
+    public long ping() {
+        return duoMiscHandler.ping().getResponse().getTime() * 1000;
+    }
 
     /**
      * Initiate the DUO api authentication (push, sms, passcode, phone modes available)
@@ -51,17 +60,9 @@ public class DuoSecurity {
      * @return  The final outcome of the DUO api call
      * @throws DuoTimeoutException If the DUO authentication is not promptly attended to, it causes timeout on authentication API
      * @throws DuoRejectedException If the DUO authentication is "deny" (reason can be fraud or mistake)
+     * @throws DuoInvalidArgumentException If the parameter passed in is not valid
      */
-    public AuthResponse auth(Auth auth) throws DuoTimeoutException, DuoRejectedException {
+    public AuthResponse auth(Auth auth) throws DuoTimeoutException, DuoRejectedException, DuoInvalidArgumentException {
         return duoAuthHandler.auth(auth).getResponse();
-    }
-
-    /**
-     * TODO: to be removed
-     */
-    public void dummy() {
-        Assert.notNull(duoAuthHandler, "Configuration error");
-        Assert.notNull(duoEnrollHandler, "Configuration error");
-        Assert.notNull(duoMiscHandler, "Configuration error");
     }
 }

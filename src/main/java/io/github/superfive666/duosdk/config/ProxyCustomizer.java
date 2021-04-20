@@ -35,6 +35,7 @@ final class ProxyCustomizer implements RestTemplateCustomizer {
     private final String proxyPassword;
 
     @Override
+    @SuppressWarnings("all")
     @SneakyThrows(value = {NoSuchAlgorithmException.class, KeyManagementException.class})
     public void customize(RestTemplate restTemplate) {
         X509TrustManager x509TrustManager = new X509TrustManager() {

@@ -1,6 +1,7 @@
 package io.github.superfive666.duosdk.annotation;
 
 import io.github.superfive666.duosdk.auth.DuoSecurity;
+import io.github.superfive666.duosdk.error.DuoInvalidArgumentException;
 import io.github.superfive666.duosdk.error.DuoRejectedException;
 import io.github.superfive666.duosdk.error.DuoTimeoutException;
 import io.github.superfive666.duosdk.params.request.Auth;
@@ -25,7 +26,7 @@ public class DuoAspect {
     private final DuoSecurity duoSecurity;
 
     @Before(value = "@annotation(duoSecured) && args(auth)")
-    @SneakyThrows(value = {DuoTimeoutException.class, DuoRejectedException.class})
+    @SneakyThrows(value = {DuoTimeoutException.class, DuoRejectedException.class, DuoInvalidArgumentException.class})
     public void duoAuthentication(Auth auth, DuoSecured duoSecured) {
         auth.setAsync(Boolean.FALSE);
         auth.setFactor(duoSecured.mode());

@@ -68,6 +68,13 @@
 			<artifactId>poi</artifactId>
 			<version>5.0.0</version>
 		</dependency>
+
+		<!-- testing -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<distributionManagement>
