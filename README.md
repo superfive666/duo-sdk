@@ -146,3 +146,5 @@ duo:
     proxy-username: admin
     proxy-password: p@ssw0rd
 ```
+
+For a springboot demo application, please find the code in [Springboot DUO sdk-demo](https://github.com/superfive666/duo-sdk-demo)
