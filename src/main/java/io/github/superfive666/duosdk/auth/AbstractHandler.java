@@ -1,6 +1,5 @@
 package io.github.superfive666.duosdk.auth;
 
-import io.github.superfive666.duosdk.params.response.DuoBaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
@@ -9,10 +8,7 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
@@ -21,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -60,15 +55,5 @@ abstract class AbstractHandler {
         SecretKeySpec macKey = new SecretKeySpec(skey.getBytes(StandardCharsets.UTF_8), "RAW");
         mac.init(macKey);
         return Hex.encodeHexString(mac.doFinal(canon.getBytes(StandardCharsets.UTF_8)));
-    }
-
-    protected <T> DuoBaseResponse<T> get(String url, HttpHeaders headers) {
-        return duoRestTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, headers),
-                new ParameterizedTypeReference<DuoBaseResponse<T>>() {}).getBody();
-    }
-
-    protected <T> DuoBaseResponse<T> post(String url, HttpHeaders headers, String data) {
-        return duoRestTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(data, headers),
-                new ParameterizedTypeReference<DuoBaseResponse<T>>() {}).getBody();
     }
 }
