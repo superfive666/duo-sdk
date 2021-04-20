@@ -6,9 +6,8 @@ import lombok.Setter;
 
 /**
  * Parameters for /auth api
- * <p><a href="https://duo.com/docs/authapi#/auth">DUO #auth</a></p>
+ * <a href="https://duo.com/docs/authapi#/auth">DUO #auth</a>
  * @author superfive
- * @date 2021-04-20
  */
 @Getter
 @Setter

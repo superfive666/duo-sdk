@@ -6,7 +6,6 @@ import lombok.Setter;
 /**
  * Authenticate the user with a passcode (from Duo Mobile, SMS, hardware token, or bypass code).
  * @author superfive
- * @date 2021-04-20
  */
 @Getter
 @Setter

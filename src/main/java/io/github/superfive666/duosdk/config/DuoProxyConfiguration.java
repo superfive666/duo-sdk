@@ -4,12 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.IOUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The configuration allows for use of proxy for any DUO authentication request.
@@ -22,9 +26,8 @@ import javax.annotation.PostConstruct;
  *     <li>duo.proxy.proxy-password: The password of authentication (can be empty if no authentication required)</li>
  * </ul>
  * Currently this version supports username password (if any) authentication method for proxy server
- *
+ * <b>Turn on debug mode to see intercepted request and response for DUO api call</b>
  * @author superfive
- * @date 2021-04-20
  */
 @Getter
 @Setter
@@ -58,11 +61,29 @@ public class DuoProxyConfiguration {
 
     @Bean
     public RestTemplate duoRestTemplate() {
-        RestTemplate duoRestTemplate = new RestTemplate();
+        RestTemplate duoRestTemplate;
         if (proxyEnabled) {
             // setup proxy factory if proxy enabled
-
+            ProxyCustomizer customizer = new ProxyCustomizer(proxyUrl, proxyPort, proxyUsername, proxyPassword);
+            duoRestTemplate = new RestTemplateBuilder(customizer).build();
+        } else {
+            duoRestTemplate = new RestTemplate();
         }
+        // set debugger interceptors
+        duoRestTemplate.getInterceptors().add((request, body, execution) -> {
+            // Request parameters log
+            log.debug("Request URL: {}", request.getURI().toString());
+            log.debug("Http headers: {}", request.getHeaders().toString());
+            if (body.length > 0) {
+                log.debug("Request body: {}", new String(body, StandardCharsets.UTF_8));
+            }
+            ClientHttpResponse clientHttpResponse = execution.execute(request, body);
+            // Response details log
+            log.debug("Http response status: {}", clientHttpResponse.getRawStatusCode());
+            log.debug("Http response headers: {}", clientHttpResponse.getHeaders().toString());
+            log.debug("Http response body: {}", new String(IOUtils.toByteArray(clientHttpResponse.getBody()), StandardCharsets.UTF_8));
+            return clientHttpResponse;
+        });
         return duoRestTemplate;
     }
 }

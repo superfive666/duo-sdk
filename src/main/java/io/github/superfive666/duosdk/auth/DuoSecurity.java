@@ -1,5 +1,6 @@
 package io.github.superfive666.duosdk.auth;
 
+import io.github.superfive666.duosdk.config.DuoSecretConfiguration;
 import io.github.superfive666.duosdk.error.DuoRejectedException;
 import io.github.superfive666.duosdk.error.DuoTimeoutException;
 import io.github.superfive666.duosdk.params.request.Auth;
@@ -15,22 +16,26 @@ import javax.annotation.PostConstruct;
 /**
  *
  * @author superfive
- * @date 2021-04-20
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DuoSecurity {
     private final RestTemplate duoRestTemplate;
+    private final DuoSecretConfiguration duoSecretConfiguration;
     private DuoAuthHandler duoAuthHandler;
     private DuoEnrollHandler duoEnrollHandler;
     private DuoMiscHandler duoMiscHandler;
 
     @PostConstruct
     public void initHandlers() {
-        duoAuthHandler      = new DuoAuthHandler(duoRestTemplate);
-        duoEnrollHandler    = new DuoEnrollHandler(duoRestTemplate);
-        duoMiscHandler      = new DuoMiscHandler(duoRestTemplate);
+        final String host = duoSecretConfiguration.getHost();
+        final String ikey = duoSecretConfiguration.getIkey();
+        final String skey = duoSecretConfiguration.getSkey();
+
+        duoAuthHandler      = new DuoAuthHandler(duoRestTemplate, host, ikey, skey);
+        duoEnrollHandler    = new DuoEnrollHandler(duoRestTemplate, host, ikey, skey);
+        duoMiscHandler      = new DuoMiscHandler(duoRestTemplate, host, ikey, skey);
 
         Assert.notNull(duoAuthHandler, "Configuration error");
         Assert.notNull(duoEnrollHandler, "Configuration error");

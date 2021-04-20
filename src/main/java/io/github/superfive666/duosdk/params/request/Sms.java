@@ -5,7 +5,6 @@ package io.github.superfive666.duosdk.params.request;
  * (it will automatically return "deny"). Thus, if the user elects to do this then you should re-prompt to
  * authenticate after the call has completed.
  * @author superfive
- * @date 2021-04-20
  */
 public class Sms implements DuoAuthApiParam {
     /**

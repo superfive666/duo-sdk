@@ -14,7 +14,6 @@ import lombok.Setter;
  * </pre>
  * @param <T> Response value object depending on the json returned
  * @author superfive
- * @date 2021-04-20
  */
 @Getter
 @Setter

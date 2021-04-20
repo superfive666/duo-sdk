@@ -8,7 +8,9 @@ import io.github.superfive666.duosdk.params.response.DuoBaseResponse;
 import org.springframework.web.client.RestTemplate;
 
 class DuoAuthHandler extends AbstractHandler {
-    DuoAuthHandler(RestTemplate duoRestTemplate) { super(duoRestTemplate); }
+    DuoAuthHandler(RestTemplate duoRestTemplate, String host, String ikey, String skey) {
+        super(duoRestTemplate, host, ikey, skey);
+    }
 
     DuoBaseResponse<AuthResponse> auth(Auth auth) throws DuoTimeoutException, DuoRejectedException {
 

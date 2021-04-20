@@ -2,10 +2,9 @@ package io.github.superfive666.duosdk.params;
 
 /**
  * Factor to use for authentication.
- * <p>See more on <a href="https://duo.com/docs/authapi#/auth">DUO #auth</a></p>
+ * See more on <a href="https://duo.com/docs/authapi#/auth">DUO #auth</a>
  *
  * @author superfive
- * @date 2021-04-20
  */
 public enum DuoAuthenticationMode {
     /**

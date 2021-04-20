@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
  * Authenticate the user with Duo Push.
  *
  * @author superfive
- * @date 2021-04-20
  */
 @Getter
 @Setter
