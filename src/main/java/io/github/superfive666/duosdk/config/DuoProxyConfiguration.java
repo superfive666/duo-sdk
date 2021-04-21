@@ -1,5 +1,6 @@
 package io.github.superfive666.duosdk.config;
 
+import io.github.superfive666.duosdk.error.DuoUnauthorizedException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +88,11 @@ public class DuoProxyConfiguration {
             // Response details log
             log.debug("Http response status: {}", clientHttpResponse.getRawStatusCode());
             log.debug("Http response headers: {}", clientHttpResponse.getHeaders().toString());
+
+            if (HttpStatus.UNAUTHORIZED.equals(clientHttpResponse.getStatusCode())) {
+                throw new DuoUnauthorizedException("Unauthorized to invoke DUO API call");
+            }
+
             byte[] buffer;
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 IOUtils.copy(clientHttpResponse.getBody(), baos);
