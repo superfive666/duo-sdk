@@ -6,7 +6,7 @@ import lombok.Setter;
 
 /**
  * DUO authentication API response value object
- * For non-async authentication, "result", "status", "status_message" will be returned. For async authentication,
+ * For non-async authentication, "result", "status", "status_msg" will be returned. For async authentication,
  * "txid" will be returned
  * @author superfive
  */
@@ -17,7 +17,7 @@ public class AuthResponse {
     private String result;
     @JsonProperty("status")
     private String status;
-    @JsonProperty("status_message")
+    @JsonProperty("status_msg")
     private String statusMessage;
     @JsonProperty("txid")
     private String txid;

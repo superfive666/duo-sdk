@@ -13,7 +13,7 @@ public class PreAuthResponse {
     private String result;
     @JsonProperty("status")
     private String status;
-    @JsonProperty("status_message")
+    @JsonProperty("status_msg")
     private String statusMessage;
     /**
      * If result is "enroll" a unique, enrollment portal URL is returned. This URL may be passed to the user and
