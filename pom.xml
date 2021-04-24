@@ -11,8 +11,28 @@
 	<groupId>io.github.superfive666</groupId>
 	<artifactId>duo-sdk</artifactId>
 	<version>1.0.0</version>
-	<name>duo-sdk</name>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Duo SDK for Integration with Springboot</description>
+	<url>https://github.com/superfive666/duo-sdk</url>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Wu Chao</name>
+			<email>wuchao900726@gmail.com</email>
+			<organization>Aquariux</organization>
+			<organizationUrl>https://github.com/superfive666</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/superfive666/duo-sdk.git</connection>
+		<developerConnection>scm:git:ssh://github.com/superfive666/duo-sdk.git</developerConnection>
+		<url>https://github.com/superfive666/duo-sdk.git</url>
+	</scm>
 	<properties>
 		<java.version>11</java.version>
 		<aspectj.version>1.9.6</aspectj.version>

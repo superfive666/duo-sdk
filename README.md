@@ -24,7 +24,7 @@ Include the following dependency in your `pom.xml` file
 <dependency>
     <groupId>io.github.superfive666</groupId>
     <artifactId>duo-sdk</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 In your springboot application properties, configure the required parameters:
