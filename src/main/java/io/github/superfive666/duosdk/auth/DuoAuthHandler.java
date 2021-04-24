@@ -8,6 +8,7 @@ import io.github.superfive666.duosdk.params.DuoAuthenticationMode;
 import io.github.superfive666.duosdk.params.request.*;
 import io.github.superfive666.duosdk.params.response.AuthResponse;
 import io.github.superfive666.duosdk.params.response.DuoBaseResponse;
+import io.github.superfive666.duosdk.params.response.PreAuthResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,25 +27,90 @@ class DuoAuthHandler extends AbstractHandler {
         super(duoRestTemplate, host, ikey, skey);
     }
 
+    DuoBaseResponse<PreAuthResponse> preAuth(PreAuth preAuth) throws DuoInvalidArgumentException,
+            DuoNetworkException, DuoRejectedException {
+        final String path = "/auth/v2/preauth";
+        Pair<HttpHeaders, String> signature = sign(constructParam(preAuth), HttpMethod.POST.name(), path);
+        DuoBaseResponse<PreAuthResponse> response = duoRestTemplate.exchange(HTTPS_PROTOCOL + host + path,
+                HttpMethod.POST, new HttpEntity<>(signature.getRight(), signature.getLeft()),
+                new ParameterizedTypeReference<DuoBaseResponse<PreAuthResponse>>() {}).getBody();
+        if (response == null) {
+            throw new DuoNetworkException("DUO remote is not responding to pre-auth request");
+        }
+        PreAuthResponse data = response.getResponse();
+        if (DuoResult.DENY.name().equalsIgnoreCase(data.getResult())) {
+            throw new DuoRejectedException(data.getStatusMessage());
+        }
+        return response;
+    }
+
+    DuoBaseResponse<AuthResponse> authStatus(AuthStatus authStatus) throws DuoInvalidArgumentException,
+            DuoNetworkException {
+        final String path = "/auth/v2/auth_status";
+        Pair<HttpHeaders, String> signature = sign(constructParam(authStatus), HttpMethod.POST.name(), path);
+        return callApiPost(path, signature);
+    }
+
     DuoBaseResponse<AuthResponse> auth(Auth auth) throws DuoTimeoutException, DuoRejectedException,
             DuoInvalidArgumentException, DuoNetworkException {
         final String path = "/auth/v2/auth";
         Pair<HttpHeaders, String> signature = sign(constructParam(auth), HttpMethod.POST.name(), path);
-        DuoBaseResponse<AuthResponse> response = duoRestTemplate.exchange(HTTPS_PROTOCOL + host + path,
-                HttpMethod.POST, new HttpEntity<>(signature.getRight(), signature.getLeft()),
-                new ParameterizedTypeReference<DuoBaseResponse<AuthResponse>>() {}).getBody();
-        if (response == null) {
-            throw new DuoNetworkException("Remote failed to respond");
-        }
+        DuoBaseResponse<AuthResponse> response = callApiPost(path, signature);
         AuthResponse data = response.getResponse();
-        if (DuoResult.DENY.name().toLowerCase().equals(data.getResult())) {
-            if (DuoResult.TIMEOUT.name().toLowerCase().equals(data.getStatus())) {
+        if (DuoResult.DENY.name().equalsIgnoreCase(data.getResult())) {
+            if (DuoResult.TIMEOUT.name().equalsIgnoreCase(data.getStatus())) {
                 throw new DuoTimeoutException(data.getStatusMessage());
             } else {
                 throw new DuoRejectedException(data.getStatusMessage());
             }
         }
         return response;
+    }
+
+    private DuoBaseResponse<AuthResponse> callApiPost(final String path, final Pair<HttpHeaders, String> signature)
+            throws DuoNetworkException {
+        DuoBaseResponse<AuthResponse> response = duoRestTemplate.exchange(HTTPS_PROTOCOL + host + path,
+                HttpMethod.POST, new HttpEntity<>(signature.getRight(), signature.getLeft()),
+                new ParameterizedTypeReference<DuoBaseResponse<AuthResponse>>() {}).getBody();
+        if (response == null) {
+            throw new DuoNetworkException("Remote failed to respond");
+        }
+
+        return response;
+    }
+
+    private Map<String, String> constructParam(PreAuth preAuth) throws DuoInvalidArgumentException {
+        Map<String, String> params = new HashMap<>(5);
+
+        if (StringUtils.isEmpty(preAuth.getUserId()) == StringUtils.isEmpty(preAuth.getUsername())) {
+            throw new DuoInvalidArgumentException("Exactly one user_id or username should be specified");
+        }
+        if (StringUtils.isNotEmpty(preAuth.getUserId())) {
+            params.put("user_id", preAuth.getUserId());
+        } else {
+            params.put("username", preAuth.getUsername());
+        }
+
+        if (StringUtils.isNotEmpty(preAuth.getIpaddr())) {
+            params.put("ipaddr", preAuth.getIpaddr());
+        }
+
+        if (StringUtils.isNotEmpty(preAuth.getHostname())) {
+            params.put("hostname", preAuth.getHostname());
+        }
+
+        if (StringUtils.isNotEmpty(preAuth.getTrustedDeviceToken())) {
+            params.put("trusted_device_token", preAuth.getTrustedDeviceToken());
+        }
+
+        return params;
+    }
+
+    private Map<String, String> constructParam(AuthStatus authStatus) throws DuoInvalidArgumentException {
+        if (StringUtils.isEmpty(authStatus.getTxid())) {
+            throw new DuoInvalidArgumentException("The transaction ID of the authentication attempt is required");
+        }
+        return Map.of("txid", authStatus.getTxid());
     }
 
     private Map<String, String> constructParam(Auth auth) throws DuoInvalidArgumentException {

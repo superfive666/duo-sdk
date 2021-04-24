@@ -21,4 +21,6 @@ public class AuthResponse {
     private String statusMessage;
     @JsonProperty("txid")
     private String txid;
+    @JsonProperty("trusted_device_token")
+    private String trustedDeviceToken;
 }
