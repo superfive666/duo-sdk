@@ -5,10 +5,9 @@ import io.github.superfive666.duosdk.error.DuoInvalidArgumentException;
 import io.github.superfive666.duosdk.error.DuoNetworkException;
 import io.github.superfive666.duosdk.error.DuoRejectedException;
 import io.github.superfive666.duosdk.error.DuoTimeoutException;
-import io.github.superfive666.duosdk.params.request.Auth;
-import io.github.superfive666.duosdk.params.request.AuthStatus;
-import io.github.superfive666.duosdk.params.request.PreAuth;
+import io.github.superfive666.duosdk.params.request.*;
 import io.github.superfive666.duosdk.params.response.AuthResponse;
+import io.github.superfive666.duosdk.params.response.EnrollResponse;
 import io.github.superfive666.duosdk.params.response.PreAuthResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +57,34 @@ public class DuoSecurity {
     }
 
     /**
+     * The /enroll endpoint provides a programmatic way to enroll new users with Duo two-factor authentication.
+     * It creates the user in Duo and returns a code (as a QR code) that Duo Mobile can scan with its built-in camera.
+     * Scanning the QR code adds the user's account to the app so that they receive and respond to Duo Push login requests.
+     *
+     * @param enroll Enroll request. All parameters in the enrollment payload are optional.
+     *               Take note on the outcome of enrollment before omitting out those parameters.
+     * @return The enrollment response
+     * @throws DuoNetworkException If the remote failed to respond
+     */
+    @SuppressWarnings("unused")
+    public EnrollResponse enroll(Enroll enroll) throws DuoNetworkException {
+        return duoEnrollHandler.enroll(enroll).getResponse();
+    }
+
+    /**
+     * Check whether a user has completed enrollment.
+     *
+     * @param enrollStatus Check enrollment status parameters, all parameters are mandatory
+     * @return "success"/"fail"
+     * @throws DuoInvalidArgumentException Missing required parameters
+     * @throws DuoNetworkException If the remote failed to respond
+     */
+    @SuppressWarnings("unused")
+    public String enrollStatus(EnrollStatus enrollStatus) throws DuoInvalidArgumentException, DuoNetworkException {
+        return duoEnrollHandler.enrollStatus(enrollStatus).getResponse();
+    }
+
+    /**
      * The /preauth endpoint determines whether a user is authorized to log in, and (if so) returns the user's
      * available authentication factors.
      *
@@ -67,6 +94,7 @@ public class DuoSecurity {
      * @throws DuoNetworkException If the remote failed to respond
      * @throws DuoRejectedException If the user is not allowed to further authentication process
      */
+    @SuppressWarnings("unused")
     public PreAuthResponse preAuth(PreAuth preAuth) throws DuoInvalidArgumentException,
             DuoNetworkException, DuoRejectedException {
         return duoAuthHandler.preAuth(preAuth).getResponse();

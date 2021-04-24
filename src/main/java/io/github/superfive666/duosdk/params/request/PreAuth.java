@@ -3,6 +3,11 @@ package io.github.superfive666.duosdk.params.request;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Parameters for /preauth api
+ * <a href="https://duo.com/docs/authapi#/preauth">DUO #preauth</a>
+ * @author superfive
+ */
 @Getter
 @Setter
 public class PreAuth {

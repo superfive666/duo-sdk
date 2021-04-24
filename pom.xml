@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.github.superfive666</groupId>
 	<artifactId>duo-sdk</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>duo-sdk</name>
 	<description>Duo SDK for Integration with Springboot</description>
 	<properties>
